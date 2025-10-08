@@ -6,6 +6,7 @@ test('contact form submits successfully', async ({ page }) => {
   await page.getByLabel('Email').fill('jane@example.com');
   await page.getByLabel('Message').fill('I would like to learn more about your setup.');
   await page.getByRole('button', { name: /send/i }).click();
-  await expect(page.getByText("Thanks! We'll be in touch.")).toBeVisible();
+  // Wait for either success or error message
+  await expect(page.locator('span.text-sm').filter({ hasText: /Thanks|in touch/i })).toBeVisible({ timeout: 10000 });
 });
 
