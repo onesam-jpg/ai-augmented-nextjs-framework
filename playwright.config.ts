@@ -15,7 +15,7 @@ export default defineConfig({
     video: 'retain-on-failure',
   },
   webServer: {
-    command: process.env.CI ? 'sh -c "pnpm build && pnpm start"' : 'pnpm dev',
+    command: process.env.CI ? 'npm run build && npm run start' : 'npm run dev',
     port: 3000,
     reuseExistingServer: !process.env.CI,
     timeout: 120000,
