@@ -54,7 +54,6 @@ export default function Page() {
 
       <section className="mt-16 border-t border-zinc-800 pt-12">
         <h2 className="text-center text-3xl font-semibold">Contact Us</h2>
-        {/* @ts-expect-error Server/Client boundary is intentional for this simple component import */}
         <ContactForm />
       </section>
     </main>

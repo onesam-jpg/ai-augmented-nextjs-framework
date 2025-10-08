@@ -7,6 +7,7 @@ const Schema = z.object({
   name: z.string().min(2, 'Name is too short'),
   email: z.string().email('Valid email required'),
   message: z.string().min(10, 'Message should be at least 10 characters'),
+  hp: z.string().optional(), // Honeypot field
 });
 
 type FormData = z.infer<typeof Schema>;
@@ -55,7 +56,7 @@ export default function ContactForm() {
         <button disabled={isSubmitting} className="rounded-md bg-violet-600 px-4 py-2 font-semibold text-white hover:bg-violet-500 disabled:opacity-50" type="submit">
           {isSubmitting ? 'Sending…' : 'Send'}
         </button>
-        {status === 'ok' && <span className="text-sm text-emerald-400">Thanks! We\'ll be in touch.</span>}
+        {status === 'ok' && <span className="text-sm text-emerald-400">Thanks! We&apos;ll be in touch.</span>}
         {status === 'error' && <span className="text-sm text-red-400">Something went wrong. Try again.</span>}
       </div>
     </form>
