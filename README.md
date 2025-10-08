@@ -1,5 +1,7 @@
 # AI Agentic Next.js Starter
 
+🌐 **Live Demo**: https://ai-augmented-nextjs-framework.vercel.app
+
 A minimal Next.js (TypeScript, App Router) landing page wired with:
 - Dev Container for consistent local dev
 - Tailwind CSS for styling
@@ -14,14 +16,14 @@ A minimal Next.js (TypeScript, App Router) landing page wired with:
 1) Open folder `VSCode_AI_Framework_Setup` in VS Code
 2) Reopen in Container (Docker Desktop running)
 3) In terminal:
-   - `pnpm install`
-   - `pnpm dev`
+   - `npm install`
+   - `npm run dev`
 4) Open http://localhost:3000
 
 E2E locally:
-- Install browsers (first time): `pnpm exec playwright install --with-deps`
-- Run tests: `pnpm test:e2e`
-- Show report: `pnpm e2e:report`
+- Install browsers (first time): `npx playwright install --with-deps`
+- Run tests: `npm run test:e2e`
+- Show report: `npm run e2e:report`
   - Includes a11y checks (tests/a11y.spec.ts) and contact form submit (tests/contact.spec.ts)
 
 ## GitHub + Vercel Deploys (GitHub App — no tokens)
@@ -84,6 +86,14 @@ Note: This CLI route is optional if you use the Vercel GitHub App for deploys.
 - Lighthouse CI: `lighthouserc.json`
 
 ## Notes
-- Uses pnpm via Corepack; switch to npm/yarn if preferred (adjust CI + `vercel.json`).
+- Uses npm as package manager; pnpm available in Dev Container if preferred (adjust CI + `vercel.json`).
 - For monorepos, move this folder or set Actions `working-directory` accordingly.
 - MCP config and governance files live alongside for agent workflows.
+
+## Documentation
+- [SESSION_NOTES.md](SESSION_NOTES.md) - Session continuity tracking
+- [PROGRESS.md](PROGRESS.md) - Project status dashboard
+- [claude.md](claude.md) - AI agent governance (300+ lines)
+- [MCP_SECURITY.md](MCP_SECURITY.md) - Security guidelines
+- [VERCEL_DEPLOYMENT.md](VERCEL_DEPLOYMENT.md) - Deployment guide
+- [DEPLOYMENT_SUCCESS.md](DEPLOYMENT_SUCCESS.md) - Production verification report
