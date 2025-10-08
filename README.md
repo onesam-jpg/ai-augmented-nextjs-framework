@@ -1,0 +1,89 @@
+# AI Agentic Next.js Starter
+
+A minimal Next.js (TypeScript, App Router) landing page wired with:
+- Dev Container for consistent local dev
+- Tailwind CSS for styling
+- Playwright E2E (Chromium/Firefox/WebKit) with GitHub annotations + HTML report
+- ESLint + Prettier configured
+- GitHub Actions: E2E → Vercel Preview/Production deploys
+- Accessibility tests with Axe (WCAG 2A/2AA)
+- Contact form (API route with server-side validation)
+- Optional webhook forwarding via `CONTACT_WEBHOOK_URL` (honeypot protected)
+
+## Run Locally (recommended Dev Container)
+1) Open folder `VSCode_AI_Framework_Setup` in VS Code
+2) Reopen in Container (Docker Desktop running)
+3) In terminal:
+   - `pnpm install`
+   - `pnpm dev`
+4) Open http://localhost:3000
+
+E2E locally:
+- Install browsers (first time): `pnpm exec playwright install --with-deps`
+- Run tests: `pnpm test:e2e`
+- Show report: `pnpm e2e:report`
+  - Includes a11y checks (tests/a11y.spec.ts) and contact form submit (tests/contact.spec.ts)
+
+## GitHub + Vercel Deploys (GitHub App — no tokens)
+1) Initialize and push repo (from `VSCode_AI_Framework_Setup`):
+```
+git init
+git add .
+git commit -m "init: nextjs + e2e + ci"
+git branch -M main
+git remote add origin https://github.com/<you>/<repo>.git
+git push -u origin main
+```
+2) Connect the repo to Vercel (GitHub App):
+   - Visit https://vercel.com/new and import your GitHub repo
+   - Select your Team, set Framework: Next.js (auto), and create the project
+   - Add any Environment Variables in Vercel (e.g., `CONTACT_WEBHOOK_URL`)
+
+3) Open a PR to trigger deployments automatically
+   - The Vercel GitHub App builds and posts a Preview URL on the PR
+   - Our GitHub Actions workflow runs E2E (Playwright) as status checks
+
+4) Protect branches
+   - In GitHub → Settings → Branches → Branch protection rules → select `main`
+   - Require status checks to pass → add `E2E (Playwright)`
+   - Optional: require PRs before merging
+
+5) Merge to `main` for Production
+   - Vercel GitHub App will deploy Production automatically
+
+Workflow file (tests only): `.github/workflows/nextjs-e2e.yml`
+
+### CI Enhancements
+- E2E tests sharded across 2 runners for speed.
+- Lighthouse CI runs on the Preview URL and uploads reports as artifacts (warn thresholds).
+
+### Environment
+- Set `CONTACT_WEBHOOK_URL` in Vercel or local `.env` to forward contact submissions to a webhook endpoint.
+
+## One-Command Guided Deploy (optional, CLI)
+From `VSCode_AI_Framework_Setup`:
+```
+bash scripts/deploy.sh
+```
+The script will:
+- Prompt for Vercel login/token
+- Link or create the Vercel project, pull envs
+- Optionally set GitHub repo secrets using `gh` CLI
+- Build and deploy a Preview and optionally Production
+Note: This CLI route is optional if you use the Vercel GitHub App for deploys.
+
+## Files of Interest
+- App: `app/page.tsx`, `app/layout.tsx`, `app/globals.css`
+- Tests: `tests/smoke.spec.ts`, `playwright.config.ts`
+- Accessibility: `tests/a11y.spec.ts`
+- Contact form: `components/ContactForm.tsx`, `app/api/contact/route.ts`, `tests/contact.spec.ts`
+- Dev Container: `.devcontainer/devcontainer.json`
+- Vercel: `vercel.json`
+- Tailwind: `tailwind.config.ts`, `postcss.config.js`
+- Lint/Format: `.eslintrc.json`, `.prettierrc`
+- Lighthouse CI: `lighthouserc.json`
+
+## Notes
+- Uses pnpm via Corepack; switch to npm/yarn if preferred (adjust CI + `vercel.json`).
+- For monorepos, move this folder or set Actions `working-directory` accordingly.
+- MCP config and governance files live alongside for agent workflows.

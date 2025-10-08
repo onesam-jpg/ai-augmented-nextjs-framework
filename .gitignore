@@ -1,0 +1,19 @@
+# Node / Next.js
+node_modules
+.next
+.vercel
+.env
+.env.local
+.env.production
+.env.development
+
+# Playwright
+playwright-report
+test-results
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json

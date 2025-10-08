@@ -1,0 +1,12 @@
+{
+  "servers": [
+    {
+      "name": "fs",
+      "type": "filesystem",
+      "root": "/workspace",
+      "permissions": ["read", "write"],
+      "notes": "Run only inside a Dev Container or VM. Use least privilege."
+    }
+  ]
+}
+
