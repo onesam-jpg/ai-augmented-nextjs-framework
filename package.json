@@ -16,6 +16,7 @@
     "sync:calendar": "node scripts/sync-notion-to-calendar.js"
   },
   "dependencies": {
+    "@googlemaps/google-maps-services-js": "^3.4.2",
     "@notionhq/client": "^2.2.15",
     "dotenv": "^16.6.1",
     "googleapis": "^128.0.0",

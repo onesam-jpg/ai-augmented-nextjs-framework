@@ -6,6 +6,16 @@
   "github": {
     "enabled": true,
     "silent": true
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/lifeos",
+      "destination": "/lifeos"
+    },
+    {
+      "source": "/lifeos/:path*",
+      "destination": "/lifeos/:path*"
+    }
+  ]
 }
 

@@ -14,7 +14,8 @@ export default function CreateTaskPage() {
     effort: 'Short (1hr)',
     whyItMatters: '',
     nextBite: '',
-    nonDeferrable: 'false'
+    nonDeferrable: 'false',
+    location: ''
   });
 
   const [loading, setLoading] = useState(false);
@@ -45,7 +46,8 @@ export default function CreateTaskPage() {
           effort: 'Short (1hr)',
           whyItMatters: '',
           nextBite: '',
-          nonDeferrable: 'false'
+          nonDeferrable: 'false',
+          location: ''
         });
       }
     } catch (error: any) {
@@ -158,6 +160,24 @@ export default function CreateTaskPage() {
             <div>
               <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>Next Bite</label>
               <input type="text" name="nextBite" value={formData.nextBite} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 transition-all" style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-light)', color: 'var(--text-primary)' }} placeholder="What's the first step?" />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
+                📍 Location (Optional)
+              </label>
+              <input
+                type="text"
+                name="location"
+                value={formData.location}
+                onChange={handleChange}
+                className="w-full px-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 transition-all"
+                style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-light)', color: 'var(--text-primary)' }}
+                placeholder="e.g., 123 Main St, City or Office Building Name"
+              />
+              <p className="text-xs mt-1.5 opacity-70" style={{ color: 'var(--text-secondary)' }}>
+                System will calculate travel time from previous task location
+              </p>
             </div>
 
             <button type="submit" disabled={loading} className="w-full py-4 rounded-xl font-semibold text-white text-lg transition-all hover:opacity-90 disabled:opacity-50" style={{ backgroundColor: 'var(--accent-blue)' }}>

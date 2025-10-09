@@ -11,6 +11,12 @@
   --text-secondary: #6e6e73;
   --text-tertiary: #86868b;
 
+  /* Input-specific colors for better visibility */
+  --input-icon: #6e6e73;
+  --input-placeholder: #6e6e73;
+  --input-border: #b8b8bd;
+  --input-border-focus: #0071e3;
+
   --accent-blue: #0071e3;
   --accent-blue-hover: #0077ed;
   --accent-blue-light: #e8f2ff;
@@ -58,6 +64,12 @@
   --text-secondary: #a1a1a6;
   --text-tertiary: #6e6e73;
 
+  /* Input-specific colors for dark mode */
+  --input-icon: #a1a1a6;
+  --input-placeholder: #a1a1a6;
+  --input-border: #48484a;
+  --input-border-focus: #0a84ff;
+
   --accent-blue: #0a84ff;
   --accent-blue-hover: #409cff;
   --accent-blue-light: #1a2332;
@@ -101,4 +113,51 @@ body {
   transition: background-color var(--transition-base),
               border-color var(--transition-base),
               color var(--transition-base);
+}
+
+/* Enhanced Input Styling for Better Visibility */
+input[type="text"],
+input[type="number"],
+input[type="datetime-local"],
+input[type="date"],
+input[type="time"],
+select,
+textarea {
+  color: var(--text-primary) !important;
+  border-color: var(--input-border) !important;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="datetime-local"]:focus,
+input[type="date"]:focus,
+input[type="time"]:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--input-border-focus) !important;
+  outline: none !important;
+  ring: 2px !important;
+  ring-color: var(--accent-blue-light) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--input-placeholder) !important;
+  opacity: 0.7;
+}
+
+/* Date/Time input icons visibility */
+input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.5);
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+[data-theme="dark"] input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator,
+[data-theme="dark"] input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.8);
+  opacity: 1;
 }
