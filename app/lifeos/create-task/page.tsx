@@ -19,7 +19,25 @@ export default function CreateTaskPage() {
   });
 
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<{ success: boolean; error?: string; calendarEvent?: string } | null>(null);
+  const [result, setResult] = useState<{
+    success: boolean;
+    error?: string;
+    calendarEvent?: string;
+    conflict?: {
+      message: string;
+      suggestedStartTime: string;
+      requestedStartTime: string;
+      calculatedEndTime: string;
+      conflictingTask: string;
+    };
+    scheduling?: {
+      actualStartTime: string;
+      actualEndTime: string;
+      travelTimeMinutes: number;
+      travelFrom: string;
+      status: string;
+    };
+  } | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -188,10 +206,44 @@ export default function CreateTaskPage() {
 
         {result && (
           <div className="mt-6 p-6 rounded-2xl" style={{ backgroundColor: result.success ? 'var(--success-bg)' : 'var(--error-bg)', borderLeft: `4px solid ${result.success ? 'var(--success)' : 'var(--error)'}`, color: result.success ? 'var(--success)' : 'var(--error)' }}>
-            <p className="font-semibold">{result.success ? '✅ Success!' : '❌ Error'}</p>
-            <p className="text-sm mt-1">{result.success ? 'Task created in Notion and synced to Google Calendar' : result.error}</p>
-            {result.success && result.calendarEvent && (
-              <a href={result.calendarEvent} target="_blank" rel="noopener noreferrer" className="inline-block mt-3 text-sm font-medium hover:underline">📅 View in Calendar →</a>
+            <p className="font-semibold">{result.success ? '✅ Success!' : '❌ Scheduling Conflict'}</p>
+
+            {result.success && (
+              <>
+                <p className="text-sm mt-1">Task created in Notion and synced to Google Calendar</p>
+                {result.scheduling && (
+                  <div className="mt-3 text-sm space-y-1" style={{ color: 'var(--text-secondary)' }}>
+                    <p><strong>Start:</strong> {new Date(result.scheduling.actualStartTime).toLocaleString()}</p>
+                    <p><strong>End:</strong> {new Date(result.scheduling.actualEndTime).toLocaleString()}</p>
+                    {result.scheduling.travelTimeMinutes > 0 && (
+                      <>
+                        <p><strong>Travel from:</strong> {result.scheduling.travelFrom}</p>
+                        <p><strong>Travel time:</strong> {result.scheduling.travelTimeMinutes} minutes</p>
+                      </>
+                    )}
+                  </div>
+                )}
+                {result.calendarEvent && (
+                  <a href={result.calendarEvent} target="_blank" rel="noopener noreferrer" className="inline-block mt-3 text-sm font-medium hover:underline">📅 View in Calendar →</a>
+                )}
+              </>
+            )}
+
+            {!result.success && result.conflict && (
+              <div className="mt-3 text-sm space-y-2">
+                <p className="font-medium">{result.conflict.message}</p>
+                <div className="mt-3 p-4 rounded-lg" style={{ backgroundColor: 'rgba(0,0,0,0.1)' }}>
+                  <p className="font-semibold mb-2">Conflict Details:</p>
+                  <p>• Requested time: {new Date(result.conflict.requestedStartTime).toLocaleString()}</p>
+                  <p>• Would end at: {new Date(result.conflict.calculatedEndTime).toLocaleString()}</p>
+                  <p>• Conflicts with: <strong>{result.conflict.conflictingTask}</strong></p>
+                  <p className="mt-2 text-xs opacity-80">💡 Tip: Choose a different time or adjust the conflicting task</p>
+                </div>
+              </div>
+            )}
+
+            {!result.success && !result.conflict && (
+              <p className="text-sm mt-1">{result.error}</p>
             )}
           </div>
         )}

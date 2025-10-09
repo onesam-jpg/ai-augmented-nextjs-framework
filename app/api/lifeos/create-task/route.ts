@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Client } from '@notionhq/client';
 import { google } from 'googleapis';
+import { calculateTravelTime, formatTravelDuration, getDirectionsLink } from '../../../../lib/google-maps-service';
 
 const notion = new Client({ auth: process.env.NOTION_API_KEY });
 
@@ -19,11 +20,126 @@ const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, priority, category, due, impactScore, effort, whyItMatters, nextBite, nonDeferrable } = body;
+    const { name, priority, category, due, impactScore, effort, whyItMatters, nextBite, nonDeferrable, location } = body;
 
-    // Build properties based on actual Notion database schema
-    // Title property is "Task" (not "Name")
-    // Most properties are rich_text, except Due (date)
+    // Calculate task duration
+    const durationMinutes = {
+      'Quick (15min)': 30,
+      'Short (1hr)': 60,
+      'Medium (half day)': 240,
+      'Long (full day+)': 480
+    }[effort] || 60;
+
+    // STEP 1: Find previous task with location (sorted by ActualEndTime DESC)
+    let previousTask = null;
+    let travelTimeMinutes = 0;
+    let travelFrom = '';
+    let schedulingStatus = 'Scheduled';
+    let conflictDetails = '';
+
+    if (location) {
+      const previousTasksQuery = await notion.databases.query({
+        database_id: process.env.NOTION_DATABASE_TASKS!,
+        filter: {
+          and: [
+            {
+              property: 'Location',
+              rich_text: { is_not_empty: true }
+            },
+            {
+              property: 'ActualEndTime',
+              date: { is_not_empty: true }
+            }
+          ]
+        },
+        sorts: [
+          {
+            property: 'ActualEndTime',
+            direction: 'descending'
+          }
+        ],
+        page_size: 1
+      });
+
+      if (previousTasksQuery.results.length > 0) {
+        previousTask = previousTasksQuery.results[0];
+        const prevLocation = (previousTask.properties as any).Location?.rich_text?.[0]?.plain_text;
+
+        if (prevLocation) {
+          // Calculate travel time
+          const travelInfo = await calculateTravelTime(prevLocation, location);
+
+          if (travelInfo) {
+            travelTimeMinutes = Math.ceil(travelInfo.duration / 60); // Convert seconds to minutes
+            travelFrom = prevLocation;
+          }
+        }
+      }
+    }
+
+    // STEP 2: Calculate actual start and end times
+    let actualStartTime: Date;
+    let actualEndTime: Date;
+
+    if (previousTask && travelTimeMinutes > 0) {
+      // Get previous task's actual end time
+      const prevEndTime = new Date((previousTask.properties as any).ActualEndTime.date.start);
+
+      // New task starts after previous task ends + travel time
+      actualStartTime = new Date(prevEndTime.getTime() + travelTimeMinutes * 60000);
+      actualEndTime = new Date(actualStartTime.getTime() + durationMinutes * 60000);
+    } else {
+      // No previous task or no travel needed - use requested due time
+      actualStartTime = new Date(due);
+      actualEndTime = new Date(actualStartTime.getTime() + durationMinutes * 60000);
+    }
+
+    // STEP 3: Check for conflicts with next task
+    const nextTasksQuery = await notion.databases.query({
+      database_id: process.env.NOTION_DATABASE_TASKS!,
+      filter: {
+        property: 'ActualStartTime',
+        date: {
+          after: actualStartTime.toISOString()
+        }
+      },
+      sorts: [
+        {
+          property: 'ActualStartTime',
+          direction: 'ascending'
+        }
+      ],
+      page_size: 1
+    });
+
+    if (nextTasksQuery.results.length > 0) {
+      const nextTask = nextTasksQuery.results[0];
+      const nextTaskStartTime = new Date((nextTask.properties as any).ActualStartTime.date.start);
+
+      // Check if new task ends before next task starts
+      if (actualEndTime > nextTaskStartTime) {
+        schedulingStatus = 'Conflict';
+        const overlapMinutes = Math.ceil((actualEndTime.getTime() - nextTaskStartTime.getTime()) / 60000);
+        const nextTaskName = (nextTask.properties as any).Task?.title?.[0]?.plain_text || 'Untitled';
+
+        conflictDetails = `Conflicts with "${nextTaskName}" by ${overlapMinutes} minutes. Next task starts at ${nextTaskStartTime.toLocaleTimeString()}, but this task would end at ${actualEndTime.toLocaleTimeString()}.`;
+
+        // Return conflict error
+        return NextResponse.json({
+          success: false,
+          error: 'SCHEDULING_CONFLICT',
+          conflict: {
+            message: conflictDetails,
+            suggestedStartTime: nextTaskStartTime.toISOString(),
+            requestedStartTime: actualStartTime.toISOString(),
+            calculatedEndTime: actualEndTime.toISOString(),
+            conflictingTask: nextTaskName
+          }
+        }, { status: 409 });
+      }
+    }
+
+    // Build Notion task properties
     const taskProperties: any = {
       Task: {
         title: [{ text: { content: name } }]
@@ -40,6 +156,12 @@ export async function POST(request: NextRequest) {
       Due: {
         date: { start: due }
       },
+      ActualStartTime: {
+        date: { start: actualStartTime.toISOString() }
+      },
+      ActualEndTime: {
+        date: { start: actualEndTime.toISOString() }
+      },
       ImpactScore: {
         rich_text: [{ text: { content: impactScore.toString() } }]
       },
@@ -48,33 +170,51 @@ export async function POST(request: NextRequest) {
       },
       NonDeferrable: {
         rich_text: [{ text: { content: nonDeferrable === 'true' ? 'Yes' : 'No' } }]
+      },
+      SchedulingStatus: {
+        select: { name: schedulingStatus }
       }
     };
 
-    // Add optional fields only if they have values
+    // Add location fields if provided
+    if (location) {
+      taskProperties.Location = {
+        rich_text: [{ text: { content: location } }]
+      };
+
+      if (travelTimeMinutes > 0) {
+        taskProperties.TravelTimeMinutes = {
+          number: travelTimeMinutes
+        };
+        taskProperties.TravelTime = {
+          rich_text: [{ text: { content: formatTravelDuration(travelTimeMinutes * 60) } }]
+        };
+        taskProperties.TravelFrom = {
+          rich_text: [{ text: { content: travelFrom } }]
+        };
+      }
+    }
+
+    // Add optional fields
     if (whyItMatters) {
       taskProperties.WhyItMatters = {
         rich_text: [{ text: { content: whyItMatters } }]
       };
     }
 
-    // 1. Create task in Notion
+    if (conflictDetails) {
+      taskProperties.ConflictDetails = {
+        rich_text: [{ text: { content: conflictDetails } }]
+      };
+    }
+
+    // Create task in Notion
     const notionTask = await notion.pages.create({
       parent: { database_id: process.env.NOTION_DATABASE_TASKS! },
       properties: taskProperties
     });
 
-    // 2. Create calendar event
-    const durationMinutes = {
-      'Quick (15min)': 30,
-      'Short (1hr)': 60,
-      'Medium (half day)': 240,
-      'Long (full day+)': 480
-    }[effort] || 60;
-
-    const startTime = new Date(due);
-    const endTime = new Date(startTime.getTime() + durationMinutes * 60000);
-
+    // Create calendar event
     const colorId = {
       'Critical': '11',
       'High': '6',
@@ -82,28 +222,40 @@ export async function POST(request: NextRequest) {
       'Low': '2'
     }[priority] || '5';
 
+    let calendarDescription = `Why it matters: ${whyItMatters}\n\nNext bite: ${nextBite}\n\n🔗 Synced from LifeOS`;
+
+    if (location) {
+      calendarDescription += `\n\n📍 Location: ${location}`;
+
+      if (travelTimeMinutes > 0 && travelFrom) {
+        const directionsLink = getDirectionsLink(travelFrom, location);
+        calendarDescription += `\n🚗 Travel from: ${travelFrom}\n⏱️ Travel time: ${formatTravelDuration(travelTimeMinutes * 60)}\n🗺️ Directions: ${directionsLink}`;
+      }
+    }
+
     const calendarEvent = await calendar.events.insert({
       calendarId: 'primary',
       requestBody: {
         summary: `[${category}] ${name}`,
-        description: `Why it matters: ${whyItMatters}\n\nNext bite: ${nextBite}\n\n🔗 Synced from LifeOS`,
+        description: calendarDescription,
         start: {
-          dateTime: startTime.toISOString()
+          dateTime: actualStartTime.toISOString()
         },
         end: {
-          dateTime: endTime.toISOString()
+          dateTime: actualEndTime.toISOString()
         },
+        location: location || undefined,
         colorId: colorId,
         reminders: {
           useDefault: false,
           overrides: [
-            { method: 'popup', minutes: 10 }
+            { method: 'popup', minutes: travelTimeMinutes > 0 ? travelTimeMinutes + 10 : 10 }
           ]
         }
       }
     });
 
-    // 3. Update Notion task with calendar event ID
+    // Update Notion task with calendar event ID
     await notion.pages.update({
       page_id: notionTask.id,
       properties: {
@@ -116,7 +268,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       notionTask: notionTask.id,
-      calendarEvent: calendarEvent.data.htmlLink
+      calendarEvent: calendarEvent.data.htmlLink,
+      scheduling: {
+        actualStartTime: actualStartTime.toISOString(),
+        actualEndTime: actualEndTime.toISOString(),
+        travelTimeMinutes,
+        travelFrom,
+        status: schedulingStatus
+      }
     });
 
   } catch (error: any) {
