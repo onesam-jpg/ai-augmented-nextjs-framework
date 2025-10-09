@@ -6,6 +6,37 @@
       "root": "/workspace",
       "permissions": ["read", "write"],
       "notes": "Run only inside a Dev Container or VM. Use least privilege."
+    },
+    {
+      "name": "google-calendar",
+      "type": "custom",
+      "command": "node",
+      "args": ["./mcp-servers/google-calendar/index.js"],
+      "env": {
+        "GOOGLE_CLIENT_ID": "${GOOGLE_CLIENT_ID}",
+        "GOOGLE_CLIENT_SECRET": "${GOOGLE_CLIENT_SECRET}",
+        "GOOGLE_REFRESH_TOKEN": "${GOOGLE_REFRESH_TOKEN}",
+        "GOOGLE_CALENDAR_ID": "${GOOGLE_CALENDAR_ID}"
+      },
+      "notes": "Google Calendar API access for LifeOS task scheduling"
+    },
+    {
+      "name": "notion-lifeos",
+      "type": "custom",
+      "command": "node",
+      "args": ["./mcp-servers/notion-lifeos/index.js"],
+      "env": {
+        "NOTION_API_KEY": "${NOTION_API_KEY}",
+        "NOTION_DATABASE_TASKS": "${NOTION_DATABASE_TASKS}",
+        "NOTION_DATABASE_PROJECTS": "${NOTION_DATABASE_PROJECTS}",
+        "NOTION_DATABASE_IDEAS": "${NOTION_DATABASE_IDEAS}",
+        "NOTION_DATABASE_DAILY_LOG": "${NOTION_DATABASE_DAILY_LOG}",
+        "NOTION_DATABASE_CONTENT": "${NOTION_DATABASE_CONTENT}",
+        "NOTION_DATABASE_FINANCE": "${NOTION_DATABASE_FINANCE}",
+        "NOTION_DATABASE_CRM": "${NOTION_DATABASE_CRM}",
+        "NOTION_DATABASE_HABITS": "${NOTION_DATABASE_HABITS}"
+      },
+      "notes": "Notion API access for LifeOS databases (Tasks, Projects, Ideas, etc.)"
     }
   ]
 }

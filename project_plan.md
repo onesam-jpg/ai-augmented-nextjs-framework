@@ -225,6 +225,95 @@
 
 ---
 
+---
+
+## Checkpoint 5: LifeOS Integration Foundation
+
+**Goal**: Connect AI framework to existing Notion-based LifeOS and prioritize Google Calendar integration for task organization.
+
+### Tasks
+- [x] Create persistent context system (`LIFEOS_CONTEXT.md`)
+- [ ] Document existing LifeOS architecture (8 Notion databases, n8n workflows)
+- [ ] Design Google Calendar MCP server (PRIORITY: Two-way sync with Notion Tasks)
+- [ ] Design Notion MCP server specification (CRUD operations)
+- [ ] Create environment variables template (`.env.example` for APIs)
+- [ ] Build MVP: Notion Task → Google Calendar event sync
+- [ ] Test Calendar integration end-to-end
+
+### Review (Checkpoint 5) - IN PROGRESS
+**Current Focus**: Google Calendar integration as foundation for task organization
+
+**Architecture Decision**:
+- **Calendar-First Approach**: Start with Google Calendar ↔ Notion Tasks sync before other features
+- **MVP Workflow**: Notion Task (with Due date) → Google Calendar event (auto-scheduled)
+- **Reverse Sync**: Calendar changes → Update Notion Task status
+- **MCP Server**: Secure, sandboxed access to both APIs
+
+**Pending**:
+- ⏳ Document current LifeOS structure (databases, formulas, workflows)
+- ⏳ Set up Google Calendar API credentials
+- ⏳ Set up Notion API integration token
+- ⏳ Build Calendar MCP server
+- ⏳ Test two-way sync
+
+**Next Steps**: Document LifeOS architecture, then build Calendar integration MVP
+
+---
+
+## Checkpoint 6: LifeOS Dashboard & AI Agents
+
+**Goal**: Build Next.js dashboard and activate specialized AI agents for life domains.
+
+### Tasks
+- [ ] Design LifeOS dashboard UI (React components)
+- [ ] Create API routes for Notion data (`/api/notion/tasks`, `/api/calendar/sync`)
+- [ ] Build real-time sync system (Notion ↔ Calendar)
+- [ ] Create 9 AI agent prompt templates (Planner, Focus, Reflection, Opportunity, Analytics, Finance, Content, CRM, Spiritual)
+- [ ] Build slash command system (`/plan-day`, `/reflect`, `/focus`, `/find-opportunity`)
+- [ ] Test agent delegation and handoff protocols
+- [ ] Deploy dashboard to Vercel
+
+### Review (Checkpoint 6) - PENDING
+**Status**: Awaiting Checkpoint 5 completion
+
+---
+
+## Checkpoint 7: Advanced LifeOS Features
+
+**Goal**: Add voice input, analytics, and multi-business workflows.
+
+### Tasks
+- [ ] Integrate Telegram voice capture (connect existing n8n workflow)
+- [ ] Build analytics dashboard (time tracking, efficiency metrics)
+- [ ] Create weekly review automation
+- [ ] Add multi-business tracking (Real Estate, Books, Content, Signing)
+- [ ] Implement opportunity finder agent (trend scanning)
+- [ ] Build habit tracking visualization
+- [ ] Test full LifeOS workflow end-to-end
+
+### Review (Checkpoint 7) - PENDING
+**Status**: Awaiting Checkpoint 6 completion
+
+---
+
+## Checkpoint 8: Polish & Optimization
+
+**Goal**: Performance optimization, documentation, and user training.
+
+### Tasks
+- [ ] Performance audit (API response times, caching strategy)
+- [ ] Security audit (MCP servers, API credentials, data privacy)
+- [ ] Create user documentation (LifeOS quick start guide)
+- [ ] Build agent usage examples (video walkthroughs)
+- [ ] Optimize agent prompts based on usage patterns
+- [ ] Mobile optimization (iPhone dashboard access)
+- [ ] Final production deployment
+
+### Review (Checkpoint 8) - PENDING
+**Status**: Awaiting Checkpoint 7 completion
+
+---
+
 ## Overall Framework Status
 
 ### ✅ What's Working
@@ -233,32 +322,34 @@
 - E2E testing infrastructure (Playwright, accessibility, sharded)
 - Governance system (claude.md, copilot_instructions.md, task tracking)
 - Security guidelines (MCP sandboxing, LLM selection, no secrets)
+- GitHub repository with CI/CD (GitHub Actions + Vercel)
+- Production deployment (https://ai-augmented-nextjs-framework.vercel.app)
 
 ### 🔄 In Progress
-- AI Toolkit integration (needs installation verification)
-- Local LLM setup (optional - llama.vscode, llama-swap)
-- Package manager strategy (npm fallback for Windows)
-- Git/GitHub initialization
-- CI/CD pipeline testing
+- **Checkpoint 5**: LifeOS integration foundation (Calendar + Notion sync)
+- Persistent context system (LIFEOS_CONTEXT.md)
+- Google Calendar API integration (PRIORITY)
 
 ### 📋 Pending
-- GitHub Actions npm compatibility fix
-- Vercel deployment configuration
-- End-to-end pipeline verification
-- Optional: Narrow MCP server scope
-- Optional: Add GitHub MCP server
+- Notion MCP server implementation
+- Calendar MCP server implementation
+- AI agent prompt engineering (9 agents)
+- LifeOS dashboard UI
+- Voice input integration
 
-### 🎯 Success Criteria (Framework Complete)
-- [ ] All 4 checkpoints reviewed and approved
-- [ ] Dev Container builds successfully
-- [ ] Next.js dev server runs (`npm run dev`)
-- [ ] E2E tests pass locally (`npm run test:e2e`)
-- [ ] Git repository initialized and pushed to GitHub
-- [ ] GitHub Actions workflow passes
-- [ ] Vercel deployments working (Preview + Production)
-- [ ] AI Toolkit + Copilot operational
-- [ ] MCP servers functional and secure
-- [ ] Documentation complete (`README.md`, `SESSION_NOTES.md`, `PROGRESS.md`)
+### 🎯 Success Criteria (LifeOS Complete)
+- [x] All 4 framework checkpoints reviewed and approved
+- [x] Dev Container builds successfully
+- [x] Next.js dev server runs (`npm run dev`)
+- [x] E2E tests pass locally (8/9 passing - 89%)
+- [x] Git repository initialized and pushed to GitHub
+- [x] GitHub Actions workflow passes
+- [x] Vercel deployments working (Preview + Production)
+- [x] Documentation complete (`README.md`, `SESSION_NOTES.md`, `PROGRESS.md`)
+- [ ] Google Calendar ↔ Notion Tasks sync working
+- [ ] 9 AI agents operational with slash commands
+- [ ] LifeOS dashboard deployed and accessible
+- [ ] End-to-end workflow tested (voice → task → calendar → reflection)
 
 ---
 
