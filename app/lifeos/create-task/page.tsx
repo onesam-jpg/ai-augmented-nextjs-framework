@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import ThemeToggle from '@/app/components/ThemeToggle';
+import ThemeToggle from '../../components/ThemeToggle';
 
 export default function CreateTaskPage() {
   const [formData, setFormData] = useState({
