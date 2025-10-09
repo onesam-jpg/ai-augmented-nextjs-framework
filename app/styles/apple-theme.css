@@ -1,0 +1,104 @@
+/* Apple-inspired Design System for LifeOS */
+
+:root {
+  /* Light Mode Colors - Apple-inspired */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f7;
+  --bg-tertiary: #fbfbfd;
+  --bg-elevated: #ffffff;
+
+  --text-primary: #1d1d1f;
+  --text-secondary: #6e6e73;
+  --text-tertiary: #86868b;
+
+  --accent-blue: #0071e3;
+  --accent-blue-hover: #0077ed;
+  --accent-blue-light: #e8f2ff;
+
+  --border-light: #d2d2d7;
+  --border-medium: #86868b;
+
+  --success: #30d158;
+  --success-bg: #ecfdf5;
+  --warning: #ff9f0a;
+  --warning-bg: #fffbeb;
+  --error: #ff3b30;
+  --error-bg: #fef2f2;
+
+  /* Priority Colors */
+  --priority-critical: #ff3b30;
+  --priority-critical-bg: #fff5f5;
+  --priority-high: #ff9f0a;
+  --priority-high-bg: #fffbeb;
+  --priority-medium: #0071e3;
+  --priority-medium-bg: #e8f2ff;
+  --priority-low: #30d158;
+  --priority-low-bg: #ecfdf5;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1), 0 10px 10px rgba(0, 0, 0, 0.04);
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="dark"] {
+  /* Dark Mode Colors - Apple-inspired */
+  --bg-primary: #000000;
+  --bg-secondary: #1c1c1e;
+  --bg-tertiary: #2c2c2e;
+  --bg-elevated: #1c1c1e;
+
+  --text-primary: #f5f5f7;
+  --text-secondary: #a1a1a6;
+  --text-tertiary: #6e6e73;
+
+  --accent-blue: #0a84ff;
+  --accent-blue-hover: #409cff;
+  --accent-blue-light: #1a2332;
+
+  --border-light: #38383a;
+  --border-medium: #48484a;
+
+  --success: #32d74b;
+  --success-bg: #0a2f1a;
+  --warning: #ff9f0a;
+  --warning-bg: #2a1f0a;
+  --error: #ff453a;
+  --error-bg: #2f0a0a;
+
+  /* Priority Colors - Dark Mode */
+  --priority-critical: #ff453a;
+  --priority-critical-bg: #2f0a0a;
+  --priority-high: #ff9f0a;
+  --priority-high-bg: #2a1f0a;
+  --priority-medium: #0a84ff;
+  --priority-medium-bg: #0a1929;
+  --priority-low: #32d74b;
+  --priority-low-bg: #0a2f1a;
+
+  /* Shadows for dark mode */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.3), 0 4px 6px rgba(0, 0, 0, 0.2);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.4), 0 10px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* SF Pro Display Font (Apple's font) - fallback to system fonts */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Smooth transitions on theme change */
+* {
+  transition: background-color var(--transition-base),
+              border-color var(--transition-base),
+              color var(--transition-base);
+}

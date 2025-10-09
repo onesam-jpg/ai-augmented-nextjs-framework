@@ -88,12 +88,10 @@ export async function POST(request: NextRequest) {
         summary: `[${category}] ${name}`,
         description: `Why it matters: ${whyItMatters}\n\nNext bite: ${nextBite}\n\n🔗 Synced from LifeOS`,
         start: {
-          dateTime: startTime.toISOString(),
-          timeZone: process.env.CALENDAR_TIMEZONE || 'America/New_York'
+          dateTime: startTime.toISOString()
         },
         end: {
-          dateTime: endTime.toISOString(),
-          timeZone: process.env.CALENDAR_TIMEZONE || 'America/New_York'
+          dateTime: endTime.toISOString()
         },
         colorId: colorId,
         reminders: {
