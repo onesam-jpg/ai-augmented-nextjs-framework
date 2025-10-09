@@ -21,41 +21,47 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { name, priority, category, due, impactScore, effort, whyItMatters, nextBite, nonDeferrable } = body;
 
+    // Build properties based on actual Notion database schema
+    // Title property is "Task" (not "Name")
+    // Most properties are rich_text, except Due (date)
+    const taskProperties: any = {
+      Task: {
+        title: [{ text: { content: name } }]
+      },
+      Status: {
+        rich_text: [{ text: { content: 'Active' } }]
+      },
+      Priority: {
+        rich_text: [{ text: { content: priority } }]
+      },
+      Category: {
+        rich_text: [{ text: { content: category } }]
+      },
+      Due: {
+        date: { start: due }
+      },
+      ImpactScore: {
+        rich_text: [{ text: { content: impactScore.toString() } }]
+      },
+      Effort: {
+        rich_text: [{ text: { content: effort } }]
+      },
+      NonDeferrable: {
+        rich_text: [{ text: { content: nonDeferrable === 'true' ? 'Yes' : 'No' } }]
+      }
+    };
+
+    // Add optional fields only if they have values
+    if (whyItMatters) {
+      taskProperties.WhyItMatters = {
+        rich_text: [{ text: { content: whyItMatters } }]
+      };
+    }
+
     // 1. Create task in Notion
     const notionTask = await notion.pages.create({
       parent: { database_id: process.env.NOTION_DATABASE_TASKS! },
-      properties: {
-        Name: {
-          title: [{ text: { content: name } }]
-        },
-        Status: {
-          select: { name: 'Active' }
-        },
-        Priority: {
-          select: { name: priority }
-        },
-        Category: {
-          select: { name: category }
-        },
-        Due: {
-          date: { start: due }
-        },
-        ImpactScore: {
-          number: parseInt(impactScore)
-        },
-        Effort: {
-          select: { name: effort }
-        },
-        NonDeferrable: {
-          checkbox: nonDeferrable === 'true'
-        },
-        WhyItMatters: {
-          rich_text: [{ text: { content: whyItMatters || '' } }]
-        },
-        NextBite: {
-          rich_text: [{ text: { content: nextBite || '' } }]
-        }
-      }
+      properties: taskProperties
     });
 
     // 2. Create calendar event
