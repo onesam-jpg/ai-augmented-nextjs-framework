@@ -91,6 +91,14 @@ Note: This CLI route is optional if you use the Vercel GitHub App for deploys.
 - MCP config and governance files live alongside for agent workflows.
 
 ## Documentation
+
+### Life OS (Transformation System)
+- **[DEPLOYMENT.md](DEPLOYMENT.md) - 🚀 START HERE: 30-minute Life OS deployment guide**
+- [QUICKSTART.md](QUICKSTART.md) - Quick start guide with templates
+- [LIFEOS_COMPLETE_VISION.md](LIFEOS_COMPLETE_VISION.md) - Complete transformation roadmap
+- [DATABASE_SCHEMA_COMPLETE.md](DATABASE_SCHEMA_COMPLETE.md) - All database specifications
+
+### Framework Documentation
 - [SESSION_NOTES.md](SESSION_NOTES.md) - Session continuity tracking
 - [PROGRESS.md](PROGRESS.md) - Project status dashboard
 - [claude.md](claude.md) - AI agent governance (300+ lines)
